@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - E-commerce</title>
+    <style>
+        :root { color-scheme: light dark; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: #111827; background: #f9fafb; }
+        header { position: sticky; top: 0; z-index: 10; background: #ffffffcc; backdrop-filter: saturate(180%) blur(8px); border-bottom: 1px solid #e5e7eb; }
+        .nav { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+        .brand { font-weight: 800; letter-spacing: -0.02em; }
+        .nav a { color: #111827; text-decoration: none; margin-left: 16px; font-weight: 600; }
+        .nav a.cta { background: #4f46e5; color: #fff; padding: 8px 12px; border-radius: 8px; }
+        .container { max-width: 900px; margin: 32px auto 60px; padding: 0 20px; }
+        h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; }
+        p.lead { color: #4b5563; margin: 0 0 20px; font-size: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px; box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
+        h2 { margin: 0 0 8px; font-size: 22px; }
+        ul { margin: 8px 0 0 18px; }
+        footer { border-top: 1px solid #e5e7eb; background: #fff; padding: 20px; text-align: center; color: #6b7280; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav">
+            <div class="brand">ShopSmart</div>
+            <div>
+                <a href="index.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html">Log in</a>
+                <a href="Sign in.html" class="cta">Sign up</a>
+            </div>
+        </nav>
+    </header>
+    <main class="container">
+        <h1>About ShopSmart</h1>
+        <p class="lead">We believe great products should be accessible, fairly priced, and delivered fast.</p>
+        <div class="grid">
+            <section class="card">
+                <h2>Our Story</h2>
+                <p>Founded in 2024, ShopSmart started as a small store with a big mission: curate the best tech and lifestyle products and make them easy to discover.</p>
+            </section>
+            <section class="card">
+                <h2>What We Value</h2>
+                <ul>
+                    <li>Customer-first support</li>
+                    <li>Quality products from trusted brands</li>
+                    <li>Transparent pricing</li>
+                    <li>Fast, eco-friendly shipping</li>
+                </ul>
+            </section>
+            <section class="card">
+                <h2>Stay Connected</h2>
+                <p>Follow us on social media and sign up for our newsletter to get the latest deals.</p>
+            </section>
+        </div>
+    </main>
+    <footer>© <span id="year"></span> ShopSmart. All rights reserved.</footer>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
+
+

@@ -64,7 +64,183 @@
         </div>
     </main>
     <footer>© <span id="year"></span> ShopSmart. All rights reserved.</footer>
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // Add interactive animations to cards
+        const cards = document.querySelectorAll('.card');
+        
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe cards for animation
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = `opacity 0.6s ease ${index * 0.2}s, transform 0.6s ease ${index * 0.2}s`;
+            observer.observe(card);
+        });
+        
+        // Add hover effects to cards
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+                this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 8px 16px rgba(0,0,0,0.05)';
+            });
+        });
+        
+        // Add click-to-expand functionality for the story section
+        const storyCard = document.querySelector('.card');
+        if (storyCard) {
+            storyCard.addEventListener('click', function() {
+                const content = this.querySelector('p');
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    content.style.overflow = 'hidden';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.overflow = 'visible';
+                }
+            });
+            
+            // Add cursor pointer to indicate clickable
+            storyCard.style.cursor = 'pointer';
+            
+            // Add expandable content
+            const storyContent = storyCard.querySelector('p');
+            storyContent.innerHTML += `
+                <br><br>
+                <span style="color: #4f46e5; font-weight: 600; cursor: pointer;">
+                    Click to read more about our journey...
+                </span>
+                <div style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                    <p>We started with a simple idea: make shopping for tech and lifestyle products as easy as possible. 
+                    Our team of product experts carefully selects each item in our catalog, ensuring quality and value for our customers.</p>
+                    <p>Today, we serve thousands of happy customers and continue to grow our selection while maintaining the same 
+                    commitment to quality and customer service that we had on day one.</p>
+                </div>
+            `;
+            
+            // Toggle expanded content
+            storyCard.addEventListener('click', function() {
+                const expandedContent = this.querySelector('div');
+                const isExpanded = expandedContent.style.display !== 'none';
+                
+                if (isExpanded) {
+                    expandedContent.style.display = 'none';
+                    this.querySelector('span').textContent = 'Click to read more about our journey...';
+                } else {
+                    expandedContent.style.display = 'block';
+                    this.querySelector('span').textContent = 'Click to read less...';
+                }
+            });
+        }
+        
+        // Add social media links animation
+        const socialLinks = [
+            { name: 'Twitter', url: '#', icon: '🐦' },
+            { name: 'Facebook', url: '#', icon: '📘' },
+            { name: 'Instagram', url: '#', icon: '📷' },
+            { name: 'LinkedIn', url: '#', icon: '💼' }
+        ];
+        
+        const stayConnectedCard = document.querySelector('.card:last-child');
+        if (stayConnectedCard) {
+            const socialContainer = document.createElement('div');
+            socialContainer.style.cssText = `
+                margin-top: 16px;
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+            `;
+            
+            socialLinks.forEach(social => {
+                const link = document.createElement('a');
+                link.href = social.url;
+                link.textContent = social.icon;
+                link.title = social.name;
+                link.style.cssText = `
+                    display: inline-block;
+                    font-size: 24px;
+                    padding: 8px;
+                    border-radius: 8px;
+                    background: #f3f4f6;
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                `;
+                
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.background = '#e5e7eb';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.background = '#f3f4f6';
+                });
+                
+                socialContainer.appendChild(link);
+            });
+            
+            stayConnectedCard.appendChild(socialContainer);
+        }
+        
+        // Add newsletter signup functionality
+        const newsletterForm = document.createElement('form');
+        newsletterForm.style.cssText = `
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+        `;
+        newsletterForm.innerHTML = `
+            <input type="email" placeholder="Enter your email" style="
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 14px;
+            ">
+            <button type="submit" style="
+                padding: 8px 16px;
+                background: #4f46e5;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: 600;
+                cursor: pointer;
+            ">Subscribe</button>
+        `;
+        
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input').value;
+            if (email) {
+                this.innerHTML = '<p style="color: #059669; margin: 0;">Thanks for subscribing!</p>';
+                this.style.justifyContent = 'center';
+            }
+        });
+        
+        if (stayConnectedCard) {
+            stayConnectedCard.appendChild(newsletterForm);
+        }
+    </script>
 </body>
 </html>
 

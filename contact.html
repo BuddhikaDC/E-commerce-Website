@@ -64,7 +64,202 @@
         </form>
     </main>
     <footer>© <span id="year"></span> ShopSmart. All rights reserved.</footer>
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // Form validation and user feedback
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input, textarea');
+        
+        // Real-time validation
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearError);
+        });
+        
+        function validateField(e) {
+            const field = e.target;
+            const value = field.value.trim();
+            
+            // Remove existing error styling
+            field.classList.remove('error');
+            
+            // Validate email
+            if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    showError(field, 'Please enter a valid email address');
+                }
+            }
+            
+            // Validate message length
+            if (field.tagName === 'TEXTAREA' && value.length < 10) {
+                showError(field, 'Message must be at least 10 characters long');
+            }
+            
+            // Check required fields
+            if (field.required && !value) {
+                showError(field, 'This field is required');
+            }
+        }
+        
+        function showError(field, message) {
+            field.classList.add('error');
+            
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.color = '#dc2626';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.marginTop = '4px';
+            field.parentNode.appendChild(errorDiv);
+        }
+        
+        function clearError(e) {
+            const field = e.target;
+            field.classList.remove('error');
+            const errorMessage = field.parentNode.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        }
+        
+        // Character counter for message
+        const messageField = document.querySelector('textarea');
+        if (messageField) {
+            const counter = document.createElement('div');
+            counter.style.cssText = `
+                text-align: right;
+                font-size: 12px;
+                color: #6b7280;
+                margin-top: 4px;
+            `;
+            messageField.parentNode.appendChild(counter);
+            
+            function updateCounter() {
+                const length = messageField.value.length;
+                const maxLength = 500;
+                counter.textContent = `${length}/${maxLength} characters`;
+                
+                if (length > maxLength * 0.8) {
+                    counter.style.color = '#dc2626';
+                } else {
+                    counter.style.color = '#6b7280';
+                }
+            }
+            
+            messageField.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate all fields
+            let isValid = true;
+            inputs.forEach(input => {
+                validateField({ target: input });
+                if (input.classList.contains('error')) {
+                    isValid = false;
+                }
+            });
+            
+            if (isValid) {
+                // Show loading state
+                const button = form.querySelector('button');
+                const originalText = button.textContent;
+                button.textContent = 'Sending...';
+                button.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    button.textContent = 'Message sent!';
+                    button.style.background = '#059669';
+                    
+                    // Show success message
+                    showSuccessMessage();
+                    
+                    // Reset form after success
+                    setTimeout(() => {
+                        form.reset();
+                        button.textContent = originalText;
+                        button.style.background = '#4f46e5';
+                        button.disabled = false;
+                        if (messageField) {
+                            updateCounter();
+                        }
+                    }, 3000);
+                }, 2000);
+            }
+        });
+        
+        function showSuccessMessage() {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #059669;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            `;
+            successDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">✓</span>
+                    <div>
+                        <div style="font-weight: 600;">Message sent successfully!</div>
+                        <div style="font-size: 14px; opacity: 0.9;">We'll get back to you soon.</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(successDiv);
+            
+            // Animate in
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(successDiv);
+                }, 300);
+            }, 5000);
+        }
+        
+        // Add error styling to CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            input.error, textarea.error {
+                border-color: #dc2626 !important;
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add auto-resize for textarea
+        if (messageField) {
+            messageField.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+            });
+        }
+    </script>
 </body>
 </html>
 

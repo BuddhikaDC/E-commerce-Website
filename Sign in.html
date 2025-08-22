@@ -122,5 +122,119 @@
             </div>
         </main>
     </div>
+    
+    <script>
+        // Form validation and user feedback
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input');
+        
+        // Real-time validation
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearError);
+        });
+        
+        function validateField(e) {
+            const field = e.target;
+            const value = field.value.trim();
+            
+            // Remove existing error styling
+            field.classList.remove('error');
+            
+            // Validate based on field type
+            if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    showError(field, 'Please enter a valid email address');
+                }
+            }
+            
+            if (field.type === 'password') {
+                if (field.id === 'confirmPassword') {
+                    const password = document.getElementById('password').value;
+                    if (value !== password) {
+                        showError(field, 'Passwords do not match');
+                    }
+                } else if (value.length < 6) {
+                    showError(field, 'Password must be at least 6 characters');
+                }
+            }
+            
+            if (field.required && !value) {
+                showError(field, 'This field is required');
+            }
+        }
+        
+        function showError(field, message) {
+            field.classList.add('error');
+            
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.color = '#dc2626';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.marginTop = '4px';
+            field.parentNode.appendChild(errorDiv);
+        }
+        
+        function clearError(e) {
+            const field = e.target;
+            field.classList.remove('error');
+            const errorMessage = field.parentNode.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        }
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate all fields
+            let isValid = true;
+            inputs.forEach(input => {
+                validateField({ target: input });
+                if (input.classList.contains('error')) {
+                    isValid = false;
+                }
+            });
+            
+            if (isValid) {
+                // Show success message
+                const button = form.querySelector('button');
+                const originalText = button.textContent;
+                button.textContent = 'Creating account...';
+                button.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    button.textContent = 'Account created!';
+                    button.style.background = '#059669';
+                    
+                    // Redirect after success
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                }, 2000);
+            }
+        });
+        
+        // Add error styling to CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            input.error {
+                border-color: #dc2626 !important;
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

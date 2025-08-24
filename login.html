@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * {
             margin: 0;
@@ -413,6 +414,18 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Google Sign-In Button Styling */
+        .g_id_signin {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .g_id_signin > div {
+            width: 100% !important;
+            height: 48px !important;
+        }
+        
         /* Responsive design */
         @media (max-width: 480px) {
             .login-card {
@@ -486,10 +499,21 @@
             </div>
 
             <div class="social-login">
-                <button class="social-btn" onclick="socialLogin('google')">
-                    <i class="fab fa-google"></i>
-                    Google
-                </button>
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
                 <button class="social-btn" onclick="socialLogin('facebook')">
                     <i class="fab fa-facebook-f"></i>
                     Facebook
@@ -632,7 +656,73 @@
             }
         });
 
-        // Social login functionality
+        // Google OAuth Configuration
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your actual Google Client ID
+        
+        // Handle Google Sign In
+        function handleGoogleSignIn(response) {
+            console.log('Google Sign In Response:', response);
+            
+            // Decode the JWT token to get user information
+            const payload = decodeJwtResponse(response.credential);
+            console.log('User Info:', payload);
+            
+            // Show loading state
+            const googleBtn = document.querySelector('.g_id_signin');
+            if (googleBtn) {
+                googleBtn.style.opacity = '0.5';
+                googleBtn.style.pointerEvents = 'none';
+            }
+            
+            // Simulate API call to your backend
+            setTimeout(() => {
+                // Store user data in localStorage (in a real app, you'd send this to your backend)
+                localStorage.setItem('user', JSON.stringify({
+                    name: payload.name,
+                    email: payload.email,
+                    picture: payload.picture,
+                    provider: 'google'
+                }));
+                
+                // Show success message
+                showSuccessMessage(`Welcome, ${payload.name}!`);
+                
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }, 1500);
+        }
+        
+        // Decode JWT token
+        function decodeJwtResponse(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+        
+        // Show success message
+        function showSuccessMessage(message) {
+            // Remove existing success message
+            const existingMessage = document.querySelector('.success-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // Create success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i>${message}`;
+            
+            // Insert before the form
+            const form = document.getElementById('loginForm');
+            form.parentNode.insertBefore(successDiv, form);
+        }
+        
+        // Social login functionality (for Facebook and other providers)
         function socialLogin(provider) {
             const btn = event.target.closest('.social-btn');
             const originalText = btn.innerHTML;
